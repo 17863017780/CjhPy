@@ -5,7 +5,6 @@ import base64
 
 smartTestUrl = "http://smarttest.jd.com/open/api/jsf/invokeHttp"
 
-
 def jsfInterfaceTest(parameterJson):
     httpUrl = smartTestUrl
     headers = {
@@ -17,10 +16,27 @@ def jsfInterfaceTest(parameterJson):
     }
     response_str = requests.post(url=httpUrl, headers=headers, json=parameterJson)
     if (response_str.status_code == 200 and response_str.text.find("\"status\":0")):
-        response_str = json.loads(response_str.text)['data']
-        return str
+        return response_str.text
     else:
         return "调用jsf服务出错", response_str.status_code, response_str.text
+
+
+
+# parameterJson 接口入参
+# interfaceName 接口name
+# alias 别名
+# methodName 方法名称
+# argsClass 方法入参类型，例如map等
+def jsfInterface(parameterJson,interfaceName,alias,methodName,argsClass):
+    parameJson = {
+        "parameterJson": parameterJson,
+        "interfaceName": interfaceName,
+        "alias": alias,
+        "methodName": methodName,
+        "argsClass": [argsClass]
+    }
+    return jsfInterfaceTest(parameJson)
+
 
 
 # 此方法就是用来base64解码的
@@ -41,13 +57,17 @@ if __name__ == '__main__':
             "java.util.Map"
         ]
     }
-    str = jsfInterfaceTest(jsonData)
-    str1 = 'eyJjb2RlIjowLCJzdGF0dXMiOjIwMCwibWVzc2FnZSI6IuaIkOWKnyIsImRhdGEiOnsiaWQiOm51bGwsInBpbiI6bnVsbCwib3JkZXJDb3VudCI6bnVsbCwiZGVmYXVsdHNDb3VudCI6bnVsbCwiZGVmYXVsdHNSYXRlIjowLCJib25kQ291bnQiOm51bGwsImdldEF1Y3Rpb25Db3VudCI6bnVsbCwiZ2V0QXVjdGlvblJhdGUiOjAsInJldHVyblJhdGUiOjAsInJldHVybkNvdW50IjpudWxsLCJmaW5pc2hDb3VudCI6bnVsbCwiY3JlYXRlVGltZSI6IkRlYyAyOSwgMjAyMCA1OjQ1OjU2IFBNIiwidXBkYXRlVGltZSI6IkRlYyAyOSwgMjAyMCA1OjQ1OjU2IFBNIiwiaXNEZWxldGUiOjF9fQ=='
-    str1 = getStrFromBase64(str1)
-    print(str1)
-
-    # abc="1231433515"
-    # if(abc.find("4") and True ):
-    #     print(True)
-    # else:
-    #     print(False)
+    parameterJson= "[{\"pin\": \"Gtyrant\"}]"
+    interfaceName ="com.jd.auction.gateway.color.IPaimaiStatisticsColorService"
+    alias = "ipaimai-common"
+    methodName = "getStatisticsInfo"
+    argsClass="java.util.Map"
+    jsondata2={
+        "parameterJson": parameterJson,
+        "interfaceName": interfaceName,
+        "alias":  alias,
+        "methodName": methodName,
+        "argsClass": [argsClass]
+    }
+    print(getStrFromBase64(jsfInterfaceTest(jsonData)))
+    print(getStrFromBase64(jsfInterface(parameterJson,interfaceName,alias,methodName,argsClass)))
